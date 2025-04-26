@@ -32,6 +32,7 @@ class Game:
         self.game_stage = 1  # Stage 1: Daily Routine
         self.current_text = ""
         self.current_location = None
+        self.drag_active = False
         
         # Initialize starting point
         self.initialize_game()
@@ -76,6 +77,10 @@ class Game:
         if location and location.items:
             for item in location.items:
                 self.action_manager.add_action(f"Examinar {item.name}", self.examine_item, item)
+                
+                # Add pickup action if item can be picked up
+                if hasattr(item, 'can_pick_up') and item.can_pick_up:
+                    self.action_manager.add_action(f"Prendar {item.name}", self.pickup_item, item)
         
         # Update UI
         self.ui.update_actions(self.action_manager.get_actions())
@@ -109,18 +114,79 @@ class Game:
         """Examine an item in the current location"""
         self.current_text = f"Vi examenas {item.name}. {item.description}"
     
+    def pickup_item(self, item):
+        """Pick up an item and add it to inventory"""
+        location = self.map.get_location(self.player.position)
+        if location and item in location.items:
+            # Convert to a simple dict format for inventory
+            inventory_item = {
+                'name': item.name,
+                'description': item.description,
+                'icon': None,  # Will be set to placeholder in UI
+                'amount': 1
+            }
+            
+            # Add to player inventory
+            self.player.add_to_inventory(inventory_item)
+            
+            # Remove from location
+            location.items.remove(item)
+            
+            # Update text
+            self.current_text = f"Vi prendas {item.name}."
+            
+            # Update actions
+            self.update_available_actions()
+    
     def handle_events(self):
         """Handle user input events"""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
+            
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    self.running = False
-                # Add other key controls here
+                    if self.ui.show_map:
+                        # Close map if open
+                        self.ui.show_map = False
+                    else:
+                        self.running = False
+                else:
+                    # Pass keypresses to UI for command input
+                    command = self.ui.handle_key(event.key)
+                    if command:
+                        # Process command (future feature)
+                        self.current_text = f"Vi eniras: {command}"
+                        
+                        # Check if command matches any action name
+                        for action in self.action_manager.get_actions():
+                            if command.lower() == action.name.lower():
+                                action.execute()
+                                return
+            
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:  # Left click
+                    # Handle UI clicks
                     self.ui.handle_click(event.pos, self.action_manager)
+                    
+                    # Start tracking drags for scrollbars
+                    self.drag_active = True
+                    self.drag_start_pos = event.pos
+            
+            elif event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:  # Left click release
+                    # Stop tracking drags
+                    self.drag_active = False
+                    
+                    # Notify scrollbars of release
+                    self.ui.textlog_scrollbar.handle_release()
+                    self.ui.inventory_scrollbar.handle_release()
+            
+            elif event.type == pygame.MOUSEMOTION:
+                if self.drag_active:
+                    # Handle drag for scrollbars
+                    self.ui.textlog_scrollbar.handle_drag(event.pos)
+                    self.ui.inventory_scrollbar.handle_drag(event.pos)
     
     def update(self):
         """Update game state"""

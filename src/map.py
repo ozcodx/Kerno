@@ -60,6 +60,11 @@ class Map:
                     name="kafeo-taso",
                     description="Un varma taso di kafeo.",
                     can_pick_up=True
+                ),
+                Item(
+                    name="noto-libro",
+                    description="Un libro por skribar noti. Olu havas kelka skriburi pri la rutinala taski.",
+                    can_pick_up=True
                 )
             ],
             exits={
@@ -84,6 +89,11 @@ class Map:
                     required_skill="technical",
                     required_skill_level=1,
                     interactions={"uzi": "Vi trovas un utila utensilo."}
+                ),
+                Item(
+                    name="reparo-utensilo",
+                    description="Un utensilo por repari la elektronika sistemi.",
+                    can_pick_up=True
                 )
             ],
             exits={
@@ -106,6 +116,11 @@ class Map:
                     required_skill="technical",
                     required_skill_level=2,
                     interactions={"uzi": "Vi akesas la sistemo e ekamenas la datumi."}
+                ),
+                Item(
+                    name="dateno-disko",
+                    description="Un kompakta disko kun gravaj datumi.",
+                    can_pick_up=True
                 )
             ],
             exits={
@@ -120,7 +135,13 @@ class Map:
             description="Un longa koridoro kun pordi ad altra chambri.",
             x=5,
             y=4,
-            items=[],
+            items=[
+                Item(
+                    name="sekureso-karto",
+                    description="Un akeso-karto por limitizita chambri. Olu semblas abandonita.",
+                    can_pick_up=True
+                )
+            ],
             exits={
                 "sude": "control_room",
                 "norde": "break_room",
@@ -141,6 +162,11 @@ class Map:
                     description="Un auto-kafeo-mashino.",
                     can_pick_up=False,
                     interactions={"uzi": "Vi facas un taso di varma kafeo."}
+                ),
+                Item(
+                    name="sandwich",
+                    description="Un sandwitch sur la tablo. Olu aspektas ankore fresha.",
+                    can_pick_up=True
                 )
             ],
             exits={
@@ -163,6 +189,11 @@ class Map:
                     required_skill="observation",
                     required_skill_level=1,
                     interactions={"uzi": "Vi regardas tra la mikroskopio e vidas stranja celuli."}
+                ),
+                Item(
+                    name="specimen-tubo",
+                    description="Un vitrea tubo kun stranja verda liquido.",
+                    can_pick_up=True
                 )
             ],
             exits={

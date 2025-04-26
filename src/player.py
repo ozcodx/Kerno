@@ -47,15 +47,49 @@ class Player:
         return skills
     
     def add_to_inventory(self, item):
-        """Add an item to the player's inventory"""
+        """
+        Add an item to the player's inventory
+        
+        Item format expected to be a dict with:
+        - name: Name of the item
+        - description: Item description
+        - icon: Optional image for the item
+        - amount: Number of items (stacks)
+        """
+        # Check if item already exists in inventory (for stacking)
+        for inv_item in self.inventory:
+            if inv_item.get('name') == item.get('name'):
+                # Increase amount
+                inv_item['amount'] = inv_item.get('amount', 1) + item.get('amount', 1)
+                return
+        
+        # If item not found, add it
         self.inventory.append(item)
     
-    def remove_from_inventory(self, item):
+    def remove_from_inventory(self, item_name, amount=1):
         """Remove an item from the player's inventory"""
-        if item in self.inventory:
-            self.inventory.remove(item)
-            return True
+        for i, item in enumerate(self.inventory):
+            if item.get('name') == item_name:
+                # Decrease amount
+                item['amount'] = item.get('amount', 1) - amount
+                
+                # Remove if amount is 0 or less
+                if item['amount'] <= 0:
+                    self.inventory.pop(i)
+                
+                return True
         return False
+    
+    def has_item(self, item_name):
+        """Check if player has an item"""
+        return any(item.get('name') == item_name for item in self.inventory)
+    
+    def get_item(self, item_name):
+        """Get an item from inventory by name"""
+        for item in self.inventory:
+            if item.get('name') == item_name:
+                return item
+        return None
     
     def has_skill(self, skill_name, required_level=1):
         """Check if player has the required skill level"""
@@ -69,7 +103,7 @@ class Player:
     def update(self):
         """Update player state"""
         # Update survival stats if enabled
-        if self.config.survival_mode:
+        if hasattr(self.config, 'survival_mode') and self.config.survival_mode:
             self._update_survival_stats()
     
     def _update_survival_stats(self):
