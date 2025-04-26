@@ -39,12 +39,16 @@ class Game:
     def initialize_game(self):
         """Set up the initial game state"""
         # Set player position to starting location
-        starting_location = self.map.get_starting_location()
-        self.player.position = starting_location
-        self.current_location = starting_location
+        starting_location_id = self.map.get_starting_location()
+        self.player.position = starting_location_id
+        self.current_location = starting_location_id
         
-        # Set initial game text
-        self.current_text = self.get_location_description(starting_location)
+        # Get the actual location object and set the initial text
+        starting_location = self.map.get_location(starting_location_id)
+        if starting_location:
+            self.current_text = self.get_location_description(starting_location)
+        else:
+            self.current_text = "Error: Location not found."
         
         # Add initial actions
         self.update_available_actions()
@@ -69,26 +73,37 @@ class Game:
         
         # Add context-specific actions
         location = self.map.get_location(self.player.position)
-        for item in location.items:
-            self.action_manager.add_action(f"Examinar {item.name}", self.examine_item, item)
+        if location and location.items:
+            for item in location.items:
+                self.action_manager.add_action(f"Examinar {item.name}", self.examine_item, item)
         
         # Update UI
         self.ui.update_actions(self.action_manager.get_actions())
     
     def move_player(self, direction):
         """Move the player in the specified direction"""
-        new_position = self.map.get_adjacent_location(self.player.position, direction)
-        if new_position:
-            self.player.position = new_position
-            self.current_location = new_position
-            self.current_text = self.get_location_description(new_position)
+        new_position_id = self.map.get_adjacent_location(self.player.position, direction)
+        if new_position_id:
+            self.player.position = new_position_id
+            self.current_location = new_position_id
+            
+            # Get location description
+            location = self.map.get_location(new_position_id)
+            if location:
+                self.current_text = self.get_location_description(location)
+            else:
+                self.current_text = "Error: Location not found."
+                
             self.update_available_actions()
     
     def look_around(self):
         """Look around the current location"""
         location = self.map.get_location(self.player.position)
-        items_desc = ", ".join([item.name for item in location.items]) if location.items else "nenio speciala"
-        self.current_text = f"{self.get_location_description(location)}\nVi vidas: {items_desc}"
+        if location:
+            items_desc = ", ".join([item.name for item in location.items]) if location.items else "nenio speciala"
+            self.current_text = f"{self.get_location_description(location)}\nVi vidas: {items_desc}"
+        else:
+            self.current_text = "Error: Location not found."
     
     def examine_item(self, item):
         """Examine an item in the current location"""
