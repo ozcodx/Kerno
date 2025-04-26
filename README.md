@@ -1,7 +1,7 @@
 # Kerno
 
 ## Game Overview
-**Kerno: Kaliel - La Lasta Devo** is a narrative exploration game set in the final days of the Thalosian civilization, right before the collapse caused by the failed Crucis Engine project. Players embody an ordinary worker—initially a technician—performing routine tasks within an underground complex. Unknowingly, their actions will place them at the center of a catastrophic event that will seal the fate of the world.
+**Kerno** is a narrative exploration game set in the final days of the Thalosian civilization, right before the collapse caused by the failed Crucis Engine project. Players embody an ordinary worker—initially a technician—performing routine tasks within an underground complex. Unknowingly, their actions will place them at the center of a catastrophic event that will seal the fate of the world.
 
 **Genre:** Narrative adventure + exploration + light survival
 **Aesthetic:** Retro-functional science fiction, low magic (advanced technology that appears magical)
