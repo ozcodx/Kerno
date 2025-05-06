@@ -1,0 +1,282 @@
+{
+    "starting_room": "tech_room",
+    "global_state": {
+        "power_status": "normal",
+        "alarm_active": false,
+        "day_count": 1
+    },
+    "rooms": [
+        {
+            "id": "tech_room",
+            "name": "Technical Room 5B",
+            "description": "You are in Technical Room 5B, your primary work area. The walls are lined with control panels and status displays, showing various readings from the facility systems. A large workbench sits in the center of the room, cluttered with tools and equipment. The air hums with the sound of machinery.",
+            "type": "technical",
+            "items": [
+                {
+                    "id": "diagnostic_tool",
+                    "name": "Diagnostic Tool",
+                    "description": "A handheld device used for diagnosing technical issues in the facility systems. Its small screen displays various readings and diagnostics information.",
+                    "takeable": true,
+                    "usable": true,
+                    "type": "tool",
+                    "use_effects": [
+                        {
+                            "room_type": "technical",
+                            "message": "You power on the diagnostic tool and scan the surrounding systems. The readings indicate normal operation with some minor fluctuations in power levels.",
+                            "effects": []
+                        },
+                        {
+                            "room_type": "corridor",
+                            "message": "You power on the diagnostic tool and scan the area. The readings show some unusual electromagnetic activity in the walls.",
+                            "effects": []
+                        }
+                    ]
+                },
+                {
+                    "id": "nutrition_bar",
+                    "name": "Nutrition Bar",
+                    "description": "A standard-issue nutrition bar provided to facility workers. It doesn't look particularly appetizing, but it should provide enough energy to keep you going.",
+                    "takeable": true,
+                    "usable": true,
+                    "consumable": true,
+                    "type": "food",
+                    "nutrition": 30
+                }
+            ],
+            "furniture": [
+                {
+                    "id": "workbench",
+                    "name": "Workbench",
+                    "description": "A sturdy metal workbench covered with various tools and electronic components. Several projects appear to be in various states of completion.",
+                    "interaction": {
+                        "message": "You sort through the items on the workbench, finding mostly spare parts and half-finished repairs.",
+                        "effects": []
+                    }
+                },
+                {
+                    "id": "control_panel",
+                    "name": "Control Panel",
+                    "description": "A wall-mounted control panel with numerous buttons, switches, and status indicators. It appears to monitor the power distribution for this section of the facility.",
+                    "interaction": {
+                        "message": "You check the control panel readings. Everything seems to be operating within normal parameters, though there's a minor power fluctuation in Sector 7.",
+                        "effects": [
+                            {
+                                "type": "set_global",
+                                "key": "noticed_fluctuation",
+                                "value": true
+                            }
+                        ]
+                    }
+                }
+            ],
+            "exits": {
+                "north": "corridor_1"
+            },
+            "events": [
+                {
+                    "probability": 0.2,
+                    "message": "The lights flicker briefly, then return to normal.",
+                    "effects": []
+                }
+            ]
+        },
+        {
+            "id": "corridor_1",
+            "name": "Main Corridor",
+            "description": "You are in the main corridor connecting the technical areas with the rest of the facility. The corridor stretches east and west, with smooth metal walls painted in a practical gray. Overhead lighting casts a sterile white glow, and occasional status panels display facility information.",
+            "type": "corridor",
+            "items": [
+                {
+                    "id": "facility_map",
+                    "name": "Facility Map",
+                    "description": "A digital tablet displaying a map of the facility. It shows the layout of the technical sector and adjacent areas.",
+                    "takeable": true,
+                    "usable": true,
+                    "type": "tool",
+                    "use_message": "You study the facility map, getting a better understanding of the layout. The technical sector connects to the living quarters to the east and the central hub to the west."
+                }
+            ],
+            "furniture": [
+                {
+                    "id": "status_panel",
+                    "name": "Status Panel",
+                    "description": "A wall-mounted status panel displaying information about the facility systems. It shows power levels, environmental conditions, and security status.",
+                    "interaction": {
+                        "message": "The status panel shows all systems operating normally, though there's a notification about scheduled maintenance in the ventilation system tomorrow.",
+                        "effects": []
+                    }
+                }
+            ],
+            "exits": {
+                "south": "tech_room",
+                "east": "living_quarters",
+                "west": "central_hub"
+            },
+            "events": []
+        },
+        {
+            "id": "living_quarters",
+            "name": "Living Quarters",
+            "description": "You enter the living quarters section. This area contains small personal rooms for facility workers. The environment is more comfortable here, with softer lighting and more personalized décor. A common area features seating and basic kitchen facilities.",
+            "type": "residential",
+            "items": [
+                {
+                    "id": "water_bottle",
+                    "name": "Water Bottle",
+                    "description": "A reusable water bottle made of durable plastic. It's about half full of clean water.",
+                    "takeable": true,
+                    "usable": true,
+                    "consumable": false,
+                    "type": "drink",
+                    "hydration": 40
+                }
+            ],
+            "furniture": [
+                {
+                    "id": "bed",
+                    "name": "Bed",
+                    "description": "A simple but comfortable bed with crisp white sheets. It looks inviting after a long shift.",
+                    "interaction": {
+                        "message": "You take a short rest on the bed. It feels good to relax for a moment.",
+                        "effects": [
+                            {
+                                "type": "schedule_event",
+                                "turns": 1,
+                                "message": "You feel refreshed after your rest.",
+                                "effects": [
+                                    {
+                                        "type": "player_effect",
+                                        "effect": "rest",
+                                        "value": 30
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "personal_locker",
+                    "name": "Personal Locker",
+                    "description": "A metal locker assigned to facility workers for storing personal belongings. It has a keypad lock.",
+                    "interaction": {
+                        "message": "You enter your access code and open the locker. Inside, you find some personal items and a small notebook with your handwriting.",
+                        "effects": [
+                            {
+                                "type": "add_item",
+                                "target": "room",
+                                "item": {
+                                    "id": "notebook",
+                                    "name": "Personal Notebook",
+                                    "description": "Your personal notebook containing notes about your work and daily life in the facility. There are some scribbled thoughts about recent power fluctuations that seem concerning.",
+                                    "takeable": true,
+                                    "usable": true,
+                                    "type": "tool",
+                                    "use_message": "You flip through your notebook, reading your notes about the facility. You've been documenting some unusual power fluctuations that started about a week ago. The last entry mentions that you planned to run additional diagnostics today."
+                                }
+                            }
+                        ]
+                    }
+                }
+            ],
+            "exits": {
+                "west": "corridor_1"
+            },
+            "events": [
+                {
+                    "probability": 0.1,
+                    "message": "You hear quiet conversation from one of the other rooms.",
+                    "effects": []
+                }
+            ]
+        },
+        {
+            "id": "central_hub",
+            "name": "Central Hub",
+            "description": "You stand in the central hub of the facility, a large circular room with multiple corridors branching off in different directions. The ceiling rises high above, with a central skylight allowing a view of the rocky cavern above. Several workers move about, going from one section to another.",
+            "type": "hub",
+            "items": [],
+            "furniture": [
+                {
+                    "id": "central_terminal",
+                    "name": "Central Terminal",
+                    "description": "A large terminal in the center of the hub, displaying facility-wide status information and announcements. Several people are gathered around it, discussing something.",
+                    "interaction": {
+                        "message": "As you approach the terminal, you notice a group of senior technicians discussing something with concerned expressions. One of them, Kaliel, notices you and waves you over.\n\n'Ah, good timing! We're seeing some unusual readings from the Crucis Engine systems. Nothing critical yet, but we're keeping an eye on it. You should probably run a full diagnostic in your sector when you get back.'",
+                        "effects": [
+                            {
+                                "type": "set_global",
+                                "key": "met_kaliel",
+                                "value": true
+                            },
+                            {
+                                "type": "schedule_event",
+                                "turns": 3,
+                                "message": "Your communication device beeps with a message from Kaliel: 'Those fluctuations are getting worse. Can you come back to the hub when you get a chance?'",
+                                "effects": []
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "announcement_board",
+                    "name": "Announcement Board",
+                    "description": "A digital board displaying facility announcements, shift schedules, and other important information for workers.",
+                    "interaction": {
+                        "message": "You check the announcement board. Among the routine notices, there's a new announcement about increased security measures around the Crucis Engine project. Access to certain areas has been restricted to senior personnel only.",
+                        "effects": []
+                    }
+                }
+            ],
+            "exits": {
+                "east": "corridor_1",
+                "north": "research_wing"
+            },
+            "events": [
+                {
+                    "probability": 0.3,
+                    "message": "A group of researchers walks by, engaged in intense discussion about something called 'containment protocols.'",
+                    "effects": []
+                }
+            ]
+        },
+        {
+            "id": "research_wing",
+            "name": "Research Wing Entrance",
+            "description": "You stand at the entrance to the research wing. A heavy security door blocks further progress, with a scanner for authorization credentials. The walls here are different - reinforced and lined with warning signs about authorized personnel only.",
+            "type": "security",
+            "items": [],
+            "furniture": [
+                {
+                    "id": "security_scanner",
+                    "name": "Security Scanner",
+                    "description": "A biometric security scanner that controls access to the research wing. It requires proper authorization credentials to grant entry.",
+                    "interaction": {
+                        "message": "You place your hand on the scanner, but it flashes red and displays 'ACCESS DENIED - INSUFFICIENT CLEARANCE LEVEL.' You need higher security credentials to enter this area.",
+                        "effects": []
+                    }
+                },
+                {
+                    "id": "warning_sign",
+                    "name": "Warning Sign",
+                    "description": "A large sign with bold red lettering: 'RESTRICTED AREA - CRUCIS ENGINE PROJECT - AUTHORIZED PERSONNEL ONLY'",
+                    "interaction": {
+                        "message": "You read the warning sign carefully. Below the main warning, smaller text states: 'Violation of security protocols will result in immediate termination of employment and possible criminal charges. All activities in this area are monitored.'",
+                        "effects": []
+                    }
+                }
+            ],
+            "exits": {
+                "south": "central_hub"
+            },
+            "events": [
+                {
+                    "probability": 0.2,
+                    "message": "The security door to the research wing opens briefly as someone exits. You catch a glimpse of a vast chamber with complex machinery before the door seals shut again.",
+                    "effects": []
+                }
+            ]
+        }
+    ],
+    "passages": [],
+    "items": []
+} 

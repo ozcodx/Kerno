@@ -1,11 +1,55 @@
 # Kerno
 
 ## Game Overview
-**Kerno: Kaliel - La Lasta Devo** is a narrative exploration game set in the final days of the Thalosian civilization, right before the collapse caused by the failed Crucis Engine project. Players embody an ordinary worker—initially a technician—performing routine tasks within an underground complex. Unknowingly, their actions will place them at the center of a catastrophic event that will seal the fate of the world.
+**Kerno: La Lasta Devo** is a narrative exploration game set in the final days of the Thalosian civilization, right before the collapse caused by the failed Crucis Engine project. Players embody an ordinary worker—initially a technician—performing routine tasks within an underground complex. Unknowingly, their actions will place them at the center of a catastrophic event that will seal the fate of the world.
 
 **Genre:** Narrative adventure + exploration + light survival
 **Aesthetic:** Retro-functional science fiction, low magic (advanced technology that appears magical)
 **Game Language:** Everything occurs exclusively in Ido
+
+## Setup and Running
+1. Clone this repository
+2. Install dependencies
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Run the game
+   ```bash
+   python play.py
+   ```
+
+### Command Line Arguments
+- `--world`: Specify a custom world file to load (default: `kerno/data/tutorial_world.json`)
+
+## How to Play
+The game is text-based with a simple command interface. At the prompt (`>`), enter commands to interact with the world:
+
+### Basic Commands
+- `look`: Look around your current location
+- `examine [object]`: Examine an object more closely
+- `take [item]`: Take an item and add it to your inventory
+- `drop [item]`: Drop an item from your inventory
+- `use [item]`: Use an item from your inventory
+- `interact [object]`: Interact with an object in the environment
+- `inventory`: Check your inventory
+- `status`: Check your current status
+- `[direction]`: Move in a direction (north, south, east, west, up, down)
+- `quit`: Exit the game 
+
+## Game Architecture
+
+### Game States
+- **World State**: Contains information about all rooms, passages, items, furniture, and global game state
+- **Player State**: Manages health, inventory, knowledge, status effects and other player attributes
+
+### Game Loop
+The main loop follows this cycle:
+1. Process world events
+2. Display current location description
+3. Wait for user input
+4. Process player action
+5. Update game state based on action
+6. Repeat
 
 ## Game Stages
 
