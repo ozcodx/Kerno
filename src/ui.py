@@ -100,7 +100,7 @@ class UI:
     def initialize_log_file(self):
         """Initialize or clear the log file"""
         with open(self.log_file, 'w', encoding='utf-8') as f:
-            f.write("=== Ludo Log ===\n\n")
+            f.write("KERNO\n\n")
     
     def add_to_text_log(self, text):
         """Add text to the text log file"""
@@ -163,12 +163,19 @@ class UI:
         if self.command_text:
             # Check if command matches any action name
             for action in action_manager.get_actions():
-                if self.command_text.lower() == action.name.lower():
+                if self.command_text.lower() == action.name.lower():  # Compare in lowercase
                     action.execute()
                     self.command_text = ""  # Clear command after execution
                     return True
             
-            # If no action matches, add to text log
+            # If no action matches, check if it's a speak command
+            if self.command_text.lower().startswith("paroli "):
+                text = self.command_text[7:]  # Remove "paroli " prefix
+                self.add_to_text_log(f"Vi parolas: {text}")
+                self.command_text = ""  # Clear command
+                return True
+            
+            # If no action matches and not a speak command, add to text log
             self.add_to_text_log(f"Vi komandas: {self.command_text}")
             self.command_text = ""  # Clear command
             return True
@@ -229,15 +236,15 @@ class UI:
         self.execute_hover = self.execute_button_rect.collidepoint(pos)
         self.help_hover = self.help_button_rect.collidepoint(pos)
     
-    def handle_key(self, key):
+    def handle_key(self, key, action_manager):
         """Handle key presses for command input"""
         if key == pygame.K_BACKSPACE:
             self.command_text = self.command_text[:-1]
         elif key == pygame.K_RETURN:
             if self.command_text:
-                # Return command for execution
-                command = self.command_text
-                return command
+                # Execute command directly
+                self.execute_command(action_manager)
+                return None
         elif key <= 127:  # ASCII characters only
             self.command_text += chr(key)
         return None

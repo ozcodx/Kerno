@@ -187,19 +187,7 @@ class Game:
                         self.running = False
                 else:
                     # Pass keypresses to UI for command input
-                    command = self.ui.handle_key(event.key)
-                    if command:
-                        # Only process command if it's different from current text
-                        if not self.current_text or not self.current_text.startswith(f"Vi eniras: {command}"):
-                            # Process command
-                            self.current_text = f"Vi eniras: {command}"
-                            self.ui.add_to_text_log(self.current_text)
-                            
-                            # Check if command matches any action name
-                            for action in self.action_manager.get_actions():
-                                if command.lower() == action.name.lower():
-                                    action.execute()
-                                    return
+                    self.ui.handle_key(event.key, self.action_manager)
             
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:  # Left click

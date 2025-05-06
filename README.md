@@ -7,6 +7,88 @@
 **Aesthetic:** Retro-functional science fiction, low magic (advanced technology that appears magical)
 **Game Language:** Everything occurs exclusively in Ido
 
+## Features
+
+### Core Gameplay
+- Modern Pygame-based graphical interface
+- Ido language command system
+- Persistent text log system
+- Interactive inventory
+- Game map visualization
+- Voice commands
+- Case-insensitive command support
+
+### Technical Features
+- Python 3.8+ and Pygame 2.0+ based
+- Persistent game log in `game_log.txt`
+- Text wrapping and scrolling in log window
+- Command execution via Enter key or button
+- Help system with command examples
+- Map view with location tracking
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/tu-usuario/kerno.git
+cd kerno
+```
+
+2. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+3. Run the game:
+```bash
+./run.sh
+```
+
+## Commands
+
+### Movement
+- `Irar [direction]` - Move in a direction
+  - Directions: norde, sude, este, weste
+
+### Basic Actions
+- `Regardar` - Look around
+- `Examinar [object]` - Examine an object
+- `Prendar [object]` - Pick up an object
+- `Uzar [object]` - Use an object
+- `Mapo` - Show map
+- `Paroli [text]` - Speak out loud
+
+### Interface
+- `ESC` - Exit game
+- `Enter` - Execute command
+- Click "Exekutar" button - Execute command
+- Click "Helpo" button - Show help
+
+## Interface Features
+
+### Text Log
+- Shows command and response history
+- Persists between sessions in `game_log.txt`
+- Supports text wrapping and scrolling
+- Commands and responses in Ido
+
+### Inventory
+- Shows collected items
+- Scrollable interface
+- Icons for each item
+
+### Map
+- Full game map view
+- Shows current location
+- Location connections
+- Close button
+
+### Commands
+- Text input for commands
+- Execute button
+- Help button
+- Case-insensitive support
+
 ## Game Stages
 
 ### Stage 1 - Daily Routine
@@ -35,28 +117,25 @@
 - Tragic, confrontational, complicit, hidden, or redemption endings
 - All narratively connect with the Ashwake universe
 
-## Game Engine and Technical Considerations
+## Project Structure
 
-### Language and Environment
-- Python + pygame as the base for the graphics engine
-- Completely offline with no server
-- Local LAN support planned for future versions (without requiring a dedicated server)
-
-### Player Input
-- Version 0: List of predefined actions in Ido (clicks or keys)
-- Future: Free text input with lexical/syntactic parser in Ido, with autocomplete system and suggestions ("maybe you meant to say")
-
-### Map and GUI
-- Simple 2D representation of explored map (visual tiles)
-- Each cell has a visual type (bridge, ladder, passage...)
-- Interface divided into:
-  - Map
-  - Environment text
-  - Inventory
-  - List of available actions
-  - Notebook/dictionary
-  - Representative illustration of the environment
-  - Text input or buttons (depending on version)
+```
+kerno/
+├── src/
+│   ├── game.py         # Main game logic
+│   ├── ui.py           # User interface
+│   ├── map.py          # Map system
+│   ├── player.py       # Player
+│   ├── action_manager.py # Action manager
+│   └── config.py       # Configuration
+├── assets/
+│   ├── images/         # Game images
+│   ├── fonts/          # Fonts
+│   └── sounds/         # Sounds
+├── requirements.txt    # Dependencies
+├── run.sh             # Run script
+└── README.md          # This file
+```
 
 ## Support for Multiple Professions
 
@@ -103,4 +182,12 @@ The game is designed to be developed in additive modules:
 - Learning the Ido language is emergent: it happens because you need to communicate with the world
 - Kaliel is your reflection, your accomplice, or your enemy
 - A tragic and comic character, as human as you
-- Everything may seem routine... until it isn't 
+- Everything may seem routine... until it isn't
+
+## Contributing
+
+Contributions are welcome. Please open an issue to discuss major changes.
+
+## License
+
+This project is licensed under the MIT License. See the LICENSE file for details. 
