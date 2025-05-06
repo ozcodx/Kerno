@@ -124,55 +124,55 @@ class Player:
         return status
         
     def get_health_status(self):
-        """Get descriptive health status"""
+        """Get descriptive health status in Ido"""
         if self.health > 90:
-            return "Healthy"
+            return "Sanoza"
         elif self.health > 70:
-            return "Slightly injured"
+            return "Kelke vundita"
         elif self.health > 50:
-            return "Injured"
+            return "Vundita"
         elif self.health > 30:
-            return "Severely injured"
+            return "Serioze vundita"
         elif self.health > 10:
-            return "Critically injured"
+            return "Kritike vundita"
         else:
-            return "Near death"
+            return "Proxim morto"
             
     def get_hunger_status(self):
-        """Get descriptive hunger status"""
+        """Get descriptive hunger status in Ido"""
         if self.hunger < 20:
-            return "Satisfied"
+            return "Satita"
         elif self.hunger < 40:
-            return "Peckish"
+            return "Iomete hungrega"
         elif self.hunger < 60:
-            return "Hungry"
+            return "Hungrega"
         elif self.hunger < 80:
-            return "Very hungry"
+            return "Tre hungrega"
         else:
-            return "Starving"
+            return "Afamanta"
             
     def get_thirst_status(self):
-        """Get descriptive thirst status"""
+        """Get descriptive thirst status in Ido"""
         if self.thirst < 20:
-            return "Hydrated"
+            return "Hidratizita"
         elif self.thirst < 40:
-            return "Slightly thirsty"
+            return "Kelke soifanta"
         elif self.thirst < 60:
-            return "Thirsty"
+            return "Soifanta"
         elif self.thirst < 80:
-            return "Very thirsty"
+            return "Tre soifanta"
         else:
-            return "Dehydrated"
+            return "Dehidratizita"
             
     def get_energy_status(self):
-        """Get descriptive energy status"""
+        """Get descriptive energy status in Ido"""
         if self.energy > 80:
-            return "Energetic"
+            return "Energioza"
         elif self.energy > 60:
-            return "Alert"
+            return "Vigla"
         elif self.energy > 40:
-            return "Tired"
+            return "Fatigita"
         elif self.energy > 20:
-            return "Very tired"
+            return "Tre fatigita"
         else:
-            return "Exhausted" 
+            return "Exhaustita" 

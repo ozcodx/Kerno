@@ -431,11 +431,11 @@ class ActionHandler:
         """Handle checking player status"""
         status = self.player.get_status()
         
-        # Translate status terms to Ido
-        status_text = f"Saneso: {self.text_formatter.translate(status['health'])}\n"
-        status_text += f"Hungro: {self.text_formatter.translate(status['hunger'])}\n"
-        status_text += f"Soifo: {self.text_formatter.translate(status['thirst'])}\n"
-        status_text += f"Energio: {self.text_formatter.translate(status['energy'])}\n"
+        # Status terms are already in Ido from the player class
+        status_text = f"Saneso: {status['health']}\n"
+        status_text += f"Hungro: {status['hunger']}\n"
+        status_text += f"Soifo: {status['thirst']}\n"
+        status_text += f"Energio: {status['energy']}\n"
         
         if "effects" in status:
             status_text += "Statuso-efekti: " + ", ".join(status["effects"])
