@@ -38,3 +38,4 @@ Thumbs.db
 # Game specific
 *.log
 save/ 
+game_log.txt
