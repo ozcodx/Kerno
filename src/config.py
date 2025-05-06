@@ -20,7 +20,7 @@ class Config:
         self.GREEN = (0, 255, 0)
         self.BLUE = (0, 0, 255)
         self.RED = (255, 0, 0)
-        self.DARK_BLUE = (20, 40, 80)  # For UI elements
+        self.DARK_BLUE = (0, 0, 150)  # For help button
         
         # Game settings
         self.tile_size = 32

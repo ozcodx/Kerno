@@ -48,6 +48,8 @@ class Game:
         starting_location = self.map.get_location(starting_location_id)
         if starting_location:
             self.current_text = self.get_location_description(starting_location)
+            # Add initial text to log only once
+            self.ui.add_to_text_log(self.current_text)
         else:
             self.current_text = "Error: Location not found."
         
@@ -71,6 +73,7 @@ class Game:
         
         # Add standard actions
         self.action_manager.add_action("Regardar", self.look_around)
+        self.action_manager.add_action("Mapo", self.show_map)
         
         # Add context-specific actions
         location = self.map.get_location(self.player.position)
@@ -81,6 +84,10 @@ class Game:
                 # Add pickup action if item can be picked up
                 if hasattr(item, 'can_pick_up') and item.can_pick_up:
                     self.action_manager.add_action(f"Prendar {item.name}", self.pickup_item, item)
+                
+                # Add use action if item can be used
+                if hasattr(item, 'can_use') and item.can_use:
+                    self.action_manager.add_action(f"Uzar {item.name}", self.use_item, item)
         
         # Update UI
         self.ui.update_actions(self.action_manager.get_actions())
@@ -96,8 +103,10 @@ class Game:
             location = self.map.get_location(new_position_id)
             if location:
                 self.current_text = self.get_location_description(location)
+                self.ui.add_to_text_log(self.current_text)
             else:
                 self.current_text = "Error: Location not found."
+                self.ui.add_to_text_log(self.current_text)
                 
             self.update_available_actions()
     
@@ -107,12 +116,15 @@ class Game:
         if location:
             items_desc = ", ".join([item.name for item in location.items]) if location.items else "nenio speciala"
             self.current_text = f"{self.get_location_description(location)}\nVi vidas: {items_desc}"
+            self.ui.add_to_text_log(self.current_text)
         else:
             self.current_text = "Error: Location not found."
+            self.ui.add_to_text_log(self.current_text)
     
     def examine_item(self, item):
         """Examine an item in the current location"""
         self.current_text = f"Vi examenas {item.name}. {item.description}"
+        self.ui.add_to_text_log(self.current_text)
     
     def pickup_item(self, item):
         """Pick up an item and add it to inventory"""
@@ -134,9 +146,31 @@ class Game:
             
             # Update text
             self.current_text = f"Vi prendas {item.name}."
+            self.ui.add_to_text_log(self.current_text)
             
             # Update actions
             self.update_available_actions()
+    
+    def show_map(self):
+        """Show the map"""
+        self.ui.show_map = True
+        self.current_text = "Vi uzas la mapo."
+        self.ui.add_to_text_log(self.current_text)
+    
+    def use_item(self, item):
+        """Use an item from inventory"""
+        # Check if item is in inventory
+        if any(inv_item.get('name', '').lower() == item.name.lower() for inv_item in self.player.inventory):
+            if item.name.lower() == 'mapo':
+                self.ui.show_map = True
+                self.current_text = "Vi uzas la mapo."
+                self.ui.add_to_text_log(self.current_text)
+            else:
+                self.current_text = f"Vi uzas {item.name}. {item.use_description}"
+                self.ui.add_to_text_log(self.current_text)
+        else:
+            self.current_text = f"Vi ne havas {item.name} en vua inventaro."
+            self.ui.add_to_text_log(self.current_text)
     
     def handle_events(self):
         """Handle user input events"""
@@ -155,19 +189,27 @@ class Game:
                     # Pass keypresses to UI for command input
                     command = self.ui.handle_key(event.key)
                     if command:
-                        # Process command (future feature)
-                        self.current_text = f"Vi eniras: {command}"
-                        
-                        # Check if command matches any action name
-                        for action in self.action_manager.get_actions():
-                            if command.lower() == action.name.lower():
-                                action.execute()
-                                return
+                        # Only process command if it's different from current text
+                        if not self.current_text or not self.current_text.startswith(f"Vi eniras: {command}"):
+                            # Process command
+                            self.current_text = f"Vi eniras: {command}"
+                            self.ui.add_to_text_log(self.current_text)
+                            
+                            # Check if command matches any action name
+                            for action in self.action_manager.get_actions():
+                                if command.lower() == action.name.lower():
+                                    action.execute()
+                                    return
             
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:  # Left click
                     # Handle UI clicks
-                    self.ui.handle_click(event.pos, self.action_manager)
+                    if self.ui.handle_click(event.pos, self.action_manager):
+                        # Only update text if the click resulted in a command execution
+                        if self.ui.command_text:
+                            self.current_text = f"Vi eniras: {self.ui.command_text}"
+                            self.ui.add_to_text_log(self.current_text)
+                            self.ui.command_text = ""
                     
                     # Start tracking drags for scrollbars
                     self.drag_active = True
@@ -183,8 +225,11 @@ class Game:
                     self.ui.inventory_scrollbar.handle_release()
             
             elif event.type == pygame.MOUSEMOTION:
+                # Update UI hover states
+                self.ui.handle_mouse_move(event.pos)
+                
+                # Handle drag for scrollbars if active
                 if self.drag_active:
-                    # Handle drag for scrollbars
                     self.ui.textlog_scrollbar.handle_drag(event.pos)
                     self.ui.inventory_scrollbar.handle_drag(event.pos)
     

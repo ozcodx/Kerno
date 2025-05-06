@@ -26,13 +26,20 @@ class UI:
         
         # Left column elements
         self.biome_height = int(self.config.height * 0.3)
-        self.textlog_height = int(self.config.height * 0.5)
-        self.command_height = self.config.height - self.biome_height - self.textlog_height
+        self.textlog_height = int(self.config.height * 0.6)  # Increased text log area
+        self.command_height = int(self.config.height * 0.1)  # Reduced command area to fit 2 lines
+        
+        # Command input area dimensions
+        self.input_width = int(self.left_column_width * 0.6)  # 60% of left column for input
+        self.help_button_width = int(self.left_column_width * 0.2)  # 20% for help button
+        self.execute_button_width = self.left_column_width - self.input_width - self.help_button_width  # Remaining space for execute button
         
         # UI elements and their positions
         self.biome_rect = pygame.Rect(0, 0, self.left_column_width, self.biome_height)
         self.textlog_rect = pygame.Rect(0, self.biome_height, self.left_column_width, self.textlog_height)
-        self.command_rect = pygame.Rect(0, self.biome_height + self.textlog_height, self.left_column_width, self.command_height)
+        self.command_rect = pygame.Rect(0, self.biome_height + self.textlog_height, self.input_width, self.command_height)
+        self.help_button_rect = pygame.Rect(self.input_width, self.biome_height + self.textlog_height, self.help_button_width, self.command_height)
+        self.execute_button_rect = pygame.Rect(self.input_width + self.help_button_width, self.biome_height + self.textlog_height, self.execute_button_width, self.command_height)
         self.inventory_rect = pygame.Rect(self.left_column_width, 0, self.right_column_width, self.config.height)
         
         # UI state variables
@@ -40,8 +47,28 @@ class UI:
         self.text_log = []
         self.text_log_offset = 0  # For scrolling
         self.command_text = ""
-        self.dropdown_open = False
-        self.dropdown_options = []
+        self.show_help = False
+        self.execute_hover = False  # For button highlighting
+        self.help_hover = False  # For help button highlighting
+        
+        # Help text
+        self.help_text = [
+            "Verbi:",
+            "  Irar [direktione] - Movar a lokaciono",
+            "  Regardar - Regardar cirkumajo",
+            "  Examinar [objekto] - Examinar objekto",
+            "  Prendar [objekto] - Prendar objekto",
+            "  Uzar [objekto] - Uzar objekto",
+            "",
+            "Direktioni:",
+            "  norde, sude, este, weste",
+            "",
+            "Exempli:",
+            "  Irar norde",
+            "  Examinar mapo",
+            "  Prendar klavo",
+            "  Uzar klavo"
+        ]
         
         # Action buttons for dropdown
         self.action_buttons = []
@@ -62,6 +89,46 @@ class UI:
             20, 
             self.inventory_rect.height
         )
+        
+        # Initialize log file
+        self.log_file = "game_log.txt"
+        self.initialize_log_file()
+        
+        # Initialize with map in inventory
+        self.add_map_to_inventory()
+    
+    def initialize_log_file(self):
+        """Initialize or clear the log file"""
+        with open(self.log_file, 'w', encoding='utf-8') as f:
+            f.write("=== Ludo Log ===\n\n")
+    
+    def add_to_text_log(self, text):
+        """Add text to the text log file"""
+        with open(self.log_file, 'a', encoding='utf-8') as f:
+            f.write(text + "\n")
+        
+        # Update the in-memory log for display
+        self._update_text_log_from_file()
+    
+    def _update_text_log_from_file(self):
+        """Update the in-memory log from the file"""
+        try:
+            with open(self.log_file, 'r', encoding='utf-8') as f:
+                self.text_log = f.readlines()
+                # Remove empty lines and strip newlines
+                self.text_log = [line.strip() for line in self.text_log if line.strip()]
+        except FileNotFoundError:
+            self.text_log = []
+    
+    def add_map_to_inventory(self):
+        """Add map to inventory as an initial item"""
+        map_item = {
+            'name': 'Mapo',
+            'description': 'Mapo de la instalação',
+            'icon': self.placeholder,
+            'amount': 1
+        }
+        self.inventory_items.append(map_item)
     
     def load_images(self):
         """Load UI images"""
@@ -87,44 +154,25 @@ class UI:
             placeholder.fill((150, 150, 150))
             return placeholder
     
-    def add_to_text_log(self, text):
-        """Add text to the text log"""
-        # Split text into lines that fit in the text log width
-        available_width = self.textlog_rect.width - 40  # Adjust for padding and scrollbar
-        words = text.split()
-        lines = []
-        current_line = ""
-        
-        for word in words:
-            test_line = current_line + " " + word if current_line else word
-            text_width, _ = self.font.size(test_line)
-            
-            if text_width < available_width:
-                current_line = test_line
-            else:
-                lines.append(current_line)
-                current_line = word
-        
-        if current_line:
-            lines.append(current_line)
-        
-        # Add to the log
-        self.text_log.extend(lines)
-        
-        # Scroll to bottom
-        self.scroll_to_bottom()
-    
-    def scroll_to_bottom(self):
-        """Scroll text log to the bottom"""
-        max_visible_lines = self.textlog_rect.height // (self.config.font_size + 5)
-        if len(self.text_log) > max_visible_lines:
-            self.text_log_offset = len(self.text_log) - max_visible_lines
-        else:
-            self.text_log_offset = 0
-    
     def update_actions(self, actions):
         """Update available action buttons"""
         self.dropdown_options = actions
+    
+    def execute_command(self, action_manager):
+        """Execute the current command"""
+        if self.command_text:
+            # Check if command matches any action name
+            for action in action_manager.get_actions():
+                if self.command_text.lower() == action.name.lower():
+                    action.execute()
+                    self.command_text = ""  # Clear command after execution
+                    return True
+            
+            # If no action matches, add to text log
+            self.add_to_text_log(f"Vi komandas: {self.command_text}")
+            self.command_text = ""  # Clear command
+            return True
+        return False
     
     def handle_click(self, pos, action_manager):
         """Handle click on UI elements"""
@@ -139,28 +187,30 @@ class UI:
                 return True
             return False
         
+        # Check if help is shown and close button was clicked
+        if self.show_help:
+            close_btn_rect = pygame.Rect(self.config.width - 50, 10, 40, 40)
+            if close_btn_rect.collidepoint(pos):
+                self.show_help = False
+                return True
+        
+        # Check if help button was clicked
+        if self.help_button_rect.collidepoint(pos):
+            self.show_help = not self.show_help
+            return True
+        
+        # Check if execute button was clicked
+        if self.execute_button_rect.collidepoint(pos):
+            return self.execute_command(action_manager)
+        
         # Check if an inventory item was clicked
         if self.inventory_rect.collidepoint(pos):
-            item_height = 60
-            item_y = self.inventory_rect.top
-            
-            for i, item in enumerate(self.inventory_items):
-                item_rect = pygame.Rect(
-                    self.inventory_rect.left + 10,
-                    item_y + i * item_height - self.inventory_scrollbar.scroll_pos,
-                    self.inventory_rect.width - 30,
-                    item_height
-                )
-                
-                if item_rect.collidepoint(pos):
-                    # Special case for map
-                    if item.get('name', '').lower() == 'map':
-                        self.show_map = True
-                    return True
-            
             # Check if inventory scrollbar was clicked
             if self.inventory_scrollbar.handle_click(pos):
                 return True
+            
+            # Inventory items are now just informational
+            return True
         
         # Check if text log scrollbar was clicked
         if self.textlog_scrollbar.handle_click(pos):
@@ -168,36 +218,16 @@ class UI:
                                       max(0, len(self.text_log) - self.textlog_rect.height // (self.config.font_size + 5)))
             return True
         
-        # Check if dropdown is open and an option was clicked
-        if self.dropdown_open:
-            dropdown_height = len(self.dropdown_options) * 30
-            dropdown_rect = pygame.Rect(
-                10, 
-                self.command_rect.top - dropdown_height,
-                self.left_column_width - 20,
-                dropdown_height
-            )
-            
-            if dropdown_rect.collidepoint(pos):
-                # Calculate which option was clicked
-                option_idx = (pos[1] - dropdown_rect.top) // 30
-                if 0 <= option_idx < len(self.dropdown_options):
-                    action = self.dropdown_options[option_idx]
-                    action.execute()
-                    self.dropdown_open = False
-                    return True
-            else:
-                # Close dropdown if clicked outside
-                self.dropdown_open = False
-                return True
-        
         # Check if command input was clicked
         if self.command_rect.collidepoint(pos):
-            # Toggle dropdown
-            self.dropdown_open = not self.dropdown_open
             return True
         
         return False
+    
+    def handle_mouse_move(self, pos):
+        """Handle mouse movement for button highlighting"""
+        self.execute_hover = self.execute_button_rect.collidepoint(pos)
+        self.help_hover = self.help_button_rect.collidepoint(pos)
     
     def handle_key(self, key):
         """Handle key presses for command input"""
@@ -205,9 +235,8 @@ class UI:
             self.command_text = self.command_text[:-1]
         elif key == pygame.K_RETURN:
             if self.command_text:
-                # Process command
+                # Return command for execution
                 command = self.command_text
-                self.command_text = ""
                 return command
         elif key <= 127:  # ASCII characters only
             self.command_text += chr(key)
@@ -222,8 +251,8 @@ class UI:
     
     def _draw_main_interface(self, player, map_obj, current_text):
         """Draw the main game interface"""
-        # Update text log if there's new text
-        if current_text and (not self.text_log or current_text != self.text_log[-1]):
+        # Update text log if there's new text and we're not showing the map
+        if not self.show_map and current_text and (not self.text_log or current_text != self.text_log[-1]):
             self.add_to_text_log(current_text)
         
         # Draw biome section
@@ -235,12 +264,18 @@ class UI:
         # Draw command section
         self._draw_command_area()
         
+        # Draw help button
+        self._draw_help_button()
+        
+        # Draw execute button
+        self._draw_execute_button()
+        
         # Draw inventory section
         self._draw_inventory(player)
         
-        # Draw dropdown if open
-        if self.dropdown_open:
-            self._draw_dropdown()
+        # Draw help text if help is shown
+        if self.show_help:
+            self._draw_help_text()
     
     def _draw_biome_area(self, player):
         """Draw the biome area with an image representing the current location"""
@@ -274,13 +309,45 @@ class UI:
         # Update scrollbar
         self.textlog_scrollbar.update(total_lines, max_visible_lines)
         
-        # Draw visible text lines
+        # Calculate max width for text (accounting for padding and scrollbar)
+        max_width = self.textlog_rect.width - 40  # 20px padding on each side
+        
+        # Draw visible text lines with wrapping
         y_offset = self.textlog_rect.top + 40
-        for i in range(self.text_log_offset, min(self.text_log_offset + max_visible_lines, total_lines)):
+        visible_lines = 0
+        
+        for i in range(self.text_log_offset, total_lines):
+            if visible_lines >= max_visible_lines:
+                break
+                
             line = self.text_log[i]
-            text_surface = self.font.render(line, True, self.config.WHITE)
-            self.screen.blit(text_surface, (self.textlog_rect.left + 10, y_offset))
-            y_offset += line_height
+            words = line.split()
+            current_line = ""
+            
+            for word in words:
+                # Test if adding the word would exceed the width
+                test_line = current_line + " " + word if current_line else word
+                test_surface = self.font.render(test_line, True, self.config.WHITE)
+                
+                if test_surface.get_width() <= max_width:
+                    current_line = test_line
+                else:
+                    # Draw current line and start new one
+                    if current_line:
+                        text_surface = self.font.render(current_line, True, self.config.WHITE)
+                        self.screen.blit(text_surface, (self.textlog_rect.left + 10, y_offset))
+                        y_offset += line_height
+                        visible_lines += 1
+                        if visible_lines >= max_visible_lines:
+                            break
+                    current_line = word
+            
+            # Draw the last line
+            if current_line and visible_lines < max_visible_lines:
+                text_surface = self.font.render(current_line, True, self.config.WHITE)
+                self.screen.blit(text_surface, (self.textlog_rect.left + 10, y_offset))
+                y_offset += line_height
+                visible_lines += 1
         
         # Draw scrollbar
         self.textlog_scrollbar.draw(self.screen, self.config)
@@ -295,41 +362,51 @@ class UI:
         prompt_text = ">> " + self.command_text
         prompt_surface = self.font.render(prompt_text, True, self.config.WHITE)
         self.screen.blit(prompt_surface, (self.command_rect.left + 10, self.command_rect.top + 10))
-        
-        # Draw dropdown indicator
-        indicator = "▼" if not self.dropdown_open else "▲"
-        indicator_surface = self.font.render(indicator, True, self.config.WHITE)
-        self.screen.blit(indicator_surface, (self.command_rect.right - 30, self.command_rect.top + 10))
     
-    def _draw_dropdown(self):
-        """Draw the command dropdown menu"""
-        dropdown_height = len(self.dropdown_options) * 30
-        dropdown_rect = pygame.Rect(
-            10, 
-            self.command_rect.top - dropdown_height,
-            self.left_column_width - 20,
-            dropdown_height
-        )
+    def _draw_help_button(self):
+        """Draw the help button"""
+        # Button background
+        button_color = self.config.DARK_BLUE if not self.help_hover else self.config.GREEN
+        pygame.draw.rect(self.screen, button_color, self.help_button_rect)
+        pygame.draw.rect(self.screen, self.config.WHITE, self.help_button_rect, 1)
         
-        # Draw dropdown background
-        pygame.draw.rect(self.screen, self.config.DARK_GRAY, dropdown_rect)
-        pygame.draw.rect(self.screen, self.config.WHITE, dropdown_rect, 1)
+        # Button text
+        button_text = self.font.render("Helpo", True, self.config.WHITE)
+        text_rect = button_text.get_rect(center=self.help_button_rect.center)
+        self.screen.blit(button_text, text_rect)
+    
+    def _draw_execute_button(self):
+        """Draw the execute button"""
+        # Button background
+        button_color = self.config.BLUE if not self.execute_hover else self.config.GREEN
+        pygame.draw.rect(self.screen, button_color, self.execute_button_rect)
+        pygame.draw.rect(self.screen, self.config.WHITE, self.execute_button_rect, 1)
         
-        # Draw options
-        for i, action in enumerate(self.dropdown_options):
-            option_rect = pygame.Rect(
-                dropdown_rect.left,
-                dropdown_rect.top + i * 30,
-                dropdown_rect.width,
-                30
-            )
-            
-            # Highlight on hover (if we were tracking mouse position)
-            pygame.draw.rect(self.screen, self.config.GRAY, option_rect)
-            
-            # Draw option text
-            option_text = self.font.render(action.name, True, self.config.WHITE)
-            self.screen.blit(option_text, (option_rect.left + 10, option_rect.top + 5))
+        # Button text
+        button_text = self.font.render("Exekutar", True, self.config.WHITE)
+        text_rect = button_text.get_rect(center=self.execute_button_rect.center)
+        self.screen.blit(button_text, text_rect)
+    
+    def _draw_help_text(self):
+        """Draw the help text overlay"""
+        # Create a semi-transparent background
+        overlay = pygame.Surface((self.config.width, self.config.height), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 200))  # Semi-transparent black
+        self.screen.blit(overlay, (0, 0))
+        
+        # Draw help text
+        line_height = self.config.font_size + 5
+        y_offset = 50
+        
+        for line in self.help_text:
+            text_surface = self.font.render(line, True, self.config.WHITE)
+            self.screen.blit(text_surface, (50, y_offset))
+            y_offset += line_height
+        
+        # Draw close button
+        close_btn_rect = pygame.Rect(self.config.width - 50, 10, 40, 40)
+        scaled_x = pygame.transform.scale(self.red_x, (40, 40))
+        self.screen.blit(scaled_x, close_btn_rect)
     
     def _draw_inventory(self, player):
         """Draw the inventory with scrollbar"""
@@ -343,11 +420,15 @@ class UI:
         
         # Update inventory items from player if changed
         if player.inventory != self.inventory_items:
-            self.inventory_items = player.inventory.copy()
-            # Always ensure map is in inventory for demo
+            # Make a copy to avoid reference issues
+            self.inventory_items = []
+            for item in player.inventory:
+                self.inventory_items.append(item.copy() if isinstance(item, dict) else item)
+            
+            # Always ensure map is in inventory
             map_in_inventory = any(item.get('name', '').lower() == 'map' for item in self.inventory_items)
             if not map_in_inventory:
-                self.inventory_items.append({'name': 'Map', 'icon': self.placeholder, 'amount': 1})
+                self.add_map_to_inventory()
         
         # Draw items with scrolling
         item_height = 60
