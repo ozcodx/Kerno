@@ -116,10 +116,13 @@ class Game:
         if location:
             items_desc = ", ".join([item.name for item in location.items]) if location.items else "nenio speciala"
             self.current_text = f"{self.get_location_description(location)}\nVi vidas: {items_desc}"
-            self.ui.add_to_text_log(self.current_text)
+            # Only add to log if the text is different from the last entry
+            if not self.ui.text_log or self.current_text != self.ui.text_log[-1]:
+                self.ui.add_to_text_log(self.current_text)
         else:
             self.current_text = "Error: Location not found."
-            self.ui.add_to_text_log(self.current_text)
+            if not self.ui.text_log or self.current_text != self.ui.text_log[-1]:
+                self.ui.add_to_text_log(self.current_text)
     
     def examine_item(self, item):
         """Examine an item in the current location"""
@@ -138,7 +141,7 @@ class Game:
                 'amount': 1
             }
             
-            # Add to player inventory
+            # Add to player inventoryl
             self.player.add_to_inventory(inventory_item)
             
             # Remove from location
@@ -185,6 +188,10 @@ class Game:
                         self.ui.show_map = False
                     else:
                         self.running = False
+                elif event.key == pygame.K_RETURN:
+                    # Execute command on Enter
+                    if self.ui.command_text:
+                        self.ui.execute_command(self.action_manager)
                 else:
                     # Pass keypresses to UI for command input
                     self.ui.handle_key(event.key, self.action_manager)
@@ -193,15 +200,9 @@ class Game:
                 if event.button == 1:  # Left click
                     # Handle UI clicks
                     if self.ui.handle_click(event.pos, self.action_manager):
-                        # Only update text if the click resulted in a command execution
-                        if self.ui.command_text:
-                            self.current_text = f"Vi eniras: {self.ui.command_text}"
-                            self.ui.add_to_text_log(self.current_text)
-                            self.ui.command_text = ""
-                    
-                    # Start tracking drags for scrollbars
-                    self.drag_active = True
-                    self.drag_start_pos = event.pos
+                        # Start tracking drags for scrollbars
+                        self.drag_active = True
+                        self.drag_start_pos = event.pos
             
             elif event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:  # Left click release
@@ -251,4 +252,9 @@ class Game:
             self.render()
             
             # Control the game speed
-            self.clock.tick(self.config.fps) 
+            self.clock.tick(self.config.fps)
+    
+    def handle_invalid_command(self, command):
+        """Handle invalid commands"""
+        self.current_text = f"Nevalida komando: {command}"
+        self.ui.add_to_text_log(self.current_text) 

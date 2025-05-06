@@ -164,8 +164,9 @@ class UI:
             # Check if command matches any action name
             for action in action_manager.get_actions():
                 if self.command_text.lower() == action.name.lower():  # Compare in lowercase
+                    # Execute the action and clear the command
                     action.execute()
-                    self.command_text = ""  # Clear command after execution
+                    self.command_text = ""
                     return True
             
             # If no action matches, check if it's a speak command
@@ -175,8 +176,8 @@ class UI:
                 self.command_text = ""  # Clear command
                 return True
             
-            # If no action matches and not a speak command, add to text log
-            self.add_to_text_log(f"Vi komandas: {self.command_text}")
+            # If no action matches and not a speak command, show error
+            self.add_to_text_log(f"Nevalida komando: {self.command_text}")
             self.command_text = ""  # Clear command
             return True
         return False
@@ -240,11 +241,6 @@ class UI:
         """Handle key presses for command input"""
         if key == pygame.K_BACKSPACE:
             self.command_text = self.command_text[:-1]
-        elif key == pygame.K_RETURN:
-            if self.command_text:
-                # Execute command directly
-                self.execute_command(action_manager)
-                return None
         elif key <= 127:  # ASCII characters only
             self.command_text += chr(key)
         return None
@@ -258,10 +254,6 @@ class UI:
     
     def _draw_main_interface(self, player, map_obj, current_text):
         """Draw the main game interface"""
-        # Update text log if there's new text and we're not showing the map
-        if not self.show_map and current_text and (not self.text_log or current_text != self.text_log[-1]):
-            self.add_to_text_log(current_text)
-        
         # Draw biome section
         self._draw_biome_area(player)
         
