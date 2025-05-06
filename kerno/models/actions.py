@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from kerno.utils.text_utils import TextFormatter
 
 @dataclass
 class ActionResult:
@@ -11,46 +12,76 @@ class ActionHandler:
     def __init__(self, world, player):
         self.world = world
         self.player = player
-        self.directions = ["north", "south", "east", "west", "up", "down"]
-        self.basic_actions = ["look", "examine", "take", "drop", "use", "interact", "inventory", "status", "help", "quit"]
+        self.text_formatter = TextFormatter()
+        
+        # Use Ido for directions
+        self.directions = ["nordo", "sudo", "esto", "westo", "supre", "infre"]
+        self.direction_mapping = {
+            "nordo": "north",
+            "sudo": "south",
+            "esto": "east",
+            "westo": "west",
+            "supre": "up",
+            "infre": "down"
+        }
+        
+        # Use Ido for basic actions
+        self.basic_actions = ["regardar", "examinar", "prenar", "pozar", "uzar", "interagar", "inventario", "statuso", "helpo", "finar"]
+        self.action_mapping = {
+            "regardar": "look",
+            "examinar": "examine",
+            "prenar": "take",
+            "pozar": "drop",
+            "uzar": "use",
+            "interagar": "interact",
+            "inventario": "inventory",
+            "statuso": "status",
+            "helpo": "help",
+            "finar": "quit"
+        }
         
     def get_available_actions(self):
-        """Get list of available actions in current context"""
+        """Get list of available actions in current context in Ido"""
         actions = self.basic_actions.copy()
         
         # Get available movement directions
         current_room = self.world.get_room(self.player.current_location)
         if current_room:
-            available_directions = [d for d in self.directions if d in current_room.exits]
+            # Map English exit directions to Ido directions
+            available_directions = []
+            for d_ido, d_en in self.direction_mapping.items():
+                if d_en in current_room.exits:
+                    available_directions.append(d_ido)
+                    
             actions.extend(available_directions)
             
             # Add examine options for items in room
             for item in current_room.items:
-                actions.append(f"examine {item['name']}")
-                actions.append(f"take {item['name']}")
+                actions.append(f"examinar {item['name']}")
+                actions.append(f"prenar {item['name']}")
                 
             # Add interaction options for furniture
             for furniture in current_room.furniture:
-                actions.append(f"interact {furniture['name']}")
-                actions.append(f"examine {furniture['name']}")
+                actions.append(f"interagar {furniture['name']}")
+                actions.append(f"examinar {furniture['name']}")
         
         # Add inventory item actions
         for item in self.player.inventory:
-            actions.append(f"examine {item['name']}")
-            actions.append(f"drop {item['name']}")
-            actions.append(f"use {item['name']}")
+            actions.append(f"examinar {item['name']}")
+            actions.append(f"pozar {item['name']}")
+            actions.append(f"uzar {item['name']}")
             
         return actions
         
     def process_action(self, action_input):
-        """Process player action from input text"""
+        """Process player action from input text in Ido"""
         action_input = action_input.lower().strip()
         
         # Handle empty input
         if not action_input:
             return ActionResult(
                 success=False,
-                message="What would you like to do?",
+                message="Quo vu volas facar?",  # What would you like to do?
                 action_type="none"
             )
         
@@ -61,58 +92,62 @@ class ActionHandler:
         
         # Movement commands
         if action in self.directions:
-            return self._handle_movement(action)
+            english_direction = self.direction_mapping.get(action)
+            return self._handle_movement(action, english_direction)
             
         # Basic commands
-        elif action == "look":
-            return self._handle_look()
-        elif action == "examine":
-            return self._handle_examine(target)
-        elif action == "take":
-            return self._handle_take(target)
-        elif action == "drop":
-            return self._handle_drop(target)
-        elif action == "use":
-            return self._handle_use(target)
-        elif action == "interact":
-            return self._handle_interact(target)
-        elif action == "inventory":
-            return self._handle_inventory()
-        elif action == "status":
-            return self._handle_status()
-        elif action == "help":
-            return self._handle_help()
-        elif action == "quit":
-            return ActionResult(
-                success=True,
-                message="Are you sure you want to quit? (yes/no)",
-                action_type="quit"
-            )
+        elif action in self.action_mapping:
+            english_action = self.action_mapping.get(action)
+            
+            if english_action == "look":
+                return self._handle_look()
+            elif english_action == "examine":
+                return self._handle_examine(target)
+            elif english_action == "take":
+                return self._handle_take(target)
+            elif english_action == "drop":
+                return self._handle_drop(target)
+            elif english_action == "use":
+                return self._handle_use(target)
+            elif english_action == "interact":
+                return self._handle_interact(target)
+            elif english_action == "inventory":
+                return self._handle_inventory()
+            elif english_action == "status":
+                return self._handle_status()
+            elif english_action == "help":
+                return self._handle_help()
+            elif english_action == "quit":
+                return ActionResult(
+                    success=True,
+                    message="Ka vu certas ke vu volas finar? (yes/no)",  # Are you sure you want to quit?
+                    action_type="quit"
+                )
             
         # Unknown command
         return ActionResult(
             success=False,
-            message=f"I don't understand '{action_input}'.",
+            message=f"Me ne komprenas '{action_input}'.",  # I don't understand
             action_type="unknown"
         )
         
-    def _handle_movement(self, direction):
+    def _handle_movement(self, ido_direction, english_direction):
         """Handle player movement in a direction"""
-        if not self.world.can_move(self.player.current_location, direction):
+        if not self.world.can_move(self.player.current_location, english_direction):
             return ActionResult(
                 success=False,
-                message=f"You can't go {direction} from here.",
+                message=f"Vu ne povas irar {ido_direction} de ca-loke.",  # You can't go X from here
                 action_type="move"
             )
             
-        destination = self.world.get_destination(self.player.current_location, direction)
+        destination = self.world.get_destination(self.player.current_location, english_direction)
         self.player.current_location = destination
-        self.player.move(direction)
+        self.player.move(english_direction)
         
         current_room = self.world.get_room(destination)
         return ActionResult(
             success=True,
-            message=f"You move {direction}.",
+            message=f"Vu movas {ido_direction}.",  # You move X
             action_type="move",
             data={"destination": destination}
         )
@@ -123,7 +158,7 @@ class ActionHandler:
         if not current_room:
             return ActionResult(
                 success=False,
-                message="You can't make out your surroundings.",
+                message="Vu ne povas komprenar vua cirkumajo.",  # You can't make out your surroundings
                 action_type="look"
             )
             
@@ -138,7 +173,7 @@ class ActionHandler:
         if not target:
             return ActionResult(
                 success=False,
-                message="What would you like to examine?",
+                message="Quo vu volas examinar?",  # What would you like to examine?
                 action_type="examine"
             )
             
@@ -147,7 +182,7 @@ class ActionHandler:
             if target.lower() in item["name"].lower():
                 return ActionResult(
                     success=True,
-                    message=item.get("description", f"A {item['name']}."),
+                    message=item.get("description", f"Un {item['name']}."),  # A [item name]
                     action_type="examine",
                     data={"item": item}
                 )
@@ -160,7 +195,7 @@ class ActionHandler:
                 if target.lower() in item["name"].lower():
                     return ActionResult(
                         success=True,
-                        message=item.get("description", f"A {item['name']}."),
+                        message=item.get("description", f"Un {item['name']}."),  # A [item name]
                         action_type="examine",
                         data={"item": item}
                     )
@@ -170,14 +205,14 @@ class ActionHandler:
                 if target.lower() in furniture["name"].lower():
                     return ActionResult(
                         success=True,
-                        message=furniture.get("description", f"A {furniture['name']}."),
+                        message=furniture.get("description", f"Un {furniture['name']}."),  # A [furniture name]
                         action_type="examine",
                         data={"furniture": furniture}
                     )
                     
         return ActionResult(
             success=False,
-            message=f"You don't see any {target} here.",
+            message=f"Vu ne vidas {target} ca-hike.",  # You don't see any X here
             action_type="examine"
         )
         
@@ -186,7 +221,7 @@ class ActionHandler:
         if not target:
             return ActionResult(
                 success=False,
-                message="What would you like to take?",
+                message="Quo vu volas prenar?",  # What would you like to take?
                 action_type="take"
             )
             
@@ -201,20 +236,20 @@ class ActionHandler:
                         self.world.remove_item_from_room(current_room.id, item["id"])
                         return ActionResult(
                             success=True,
-                            message=f"You take the {item['name']}.",
+                            message=f"Vu prenas la {item['name']}.",  # You take the X
                             action_type="take",
                             data={"item": item}
                         )
                     else:
                         return ActionResult(
                             success=False,
-                            message=f"You can't take the {item['name']}.",
+                            message=f"Vu ne povas prenar la {item['name']}.",  # You can't take the X
                             action_type="take"
                         )
                         
         return ActionResult(
             success=False,
-            message=f"You don't see any {target} here that you can take.",
+            message=f"Vu ne vidas {target} ca-hike por prenar.",  # You don't see any X here that you can take
             action_type="take"
         )
         
@@ -223,7 +258,7 @@ class ActionHandler:
         if not target:
             return ActionResult(
                 success=False,
-                message="What would you like to drop?",
+                message="Quo vu volas pozar?",  # What would you like to drop?
                 action_type="drop"
             )
             
@@ -235,14 +270,14 @@ class ActionHandler:
                 self.world.add_item_to_room(self.player.current_location, item)
                 return ActionResult(
                     success=True,
-                    message=f"You drop the {item['name']}.",
+                    message=f"Vu pozas la {item['name']}.",  # You drop the X
                     action_type="drop",
                     data={"item": item}
                 )
                 
         return ActionResult(
             success=False,
-            message=f"You don't have any {target} to drop.",
+            message=f"Vu ne havas {target} por pozar.",  # You don't have any X to drop
             action_type="drop"
         )
         
@@ -251,7 +286,7 @@ class ActionHandler:
         if not target:
             return ActionResult(
                 success=False,
-                message="What would you like to use?",
+                message="Quo vu volas uzar?",  # What would you like to use?
                 action_type="use"
             )
             
@@ -261,7 +296,7 @@ class ActionHandler:
                 if not item.get("usable", False):
                     return ActionResult(
                         success=False,
-                        message=f"You can't use the {item['name']} like that.",
+                        message=f"Vu ne povas uzar la {item['name']} talamaniere.",  # You can't use the X like that
                         action_type="use"
                     )
                     
@@ -273,7 +308,7 @@ class ActionHandler:
                 
         return ActionResult(
             success=False,
-            message=f"You don't have any {target} to use.",
+            message=f"Vu ne havas {target} por uzar.",  # You don't have any X to use
             action_type="use"
         )
         
@@ -286,7 +321,7 @@ class ActionHandler:
             self.player.consume_food(nutrition)
             return ActionResult(
                 success=True,
-                message=f"You eat the {item['name']}. It satisfies your hunger.",
+                message=f"Vu manjas la {item['name']}. Ol satigas vua hungro.",  # You eat the X. It satisfies your hunger
                 action_type="use",
                 data={"effect": "nutrition", "value": nutrition}
             )
@@ -296,7 +331,7 @@ class ActionHandler:
             self.player.consume_drink(hydration)
             return ActionResult(
                 success=True,
-                message=f"You drink the {item['name']}. It quenches your thirst.",
+                message=f"Vu drinkas la {item['name']}. Ol satenigas vua soifo.",  # You drink the X. It quenches your thirst
                 action_type="use",
                 data={"effect": "hydration", "value": hydration}
             )
@@ -309,14 +344,14 @@ class ActionHandler:
                     if effect.get("room_type") == current_room.type:
                         return ActionResult(
                             success=True,
-                            message=effect.get("message", f"You use the {item['name']}."),
+                            message=effect.get("message", f"Vu uzas la {item['name']}."),  # You use the X
                             action_type="use",
                             data={"effect": effect}
                         )
                         
             return ActionResult(
                 success=False,
-                message=f"You can't find a way to use the {item['name']} here.",
+                message=f"Vu ne povas trovar maniero uzar la {item['name']} ca-hike.",  # You can't find a way to use the X here
                 action_type="use"
             )
             
@@ -324,7 +359,7 @@ class ActionHandler:
             # Generic item use
             return ActionResult(
                 success=True,
-                message=item.get("use_message", f"You use the {item['name']}."),
+                message=item.get("use_message", f"Vu uzas la {item['name']}."),  # You use the X
                 action_type="use"
             )
             
@@ -333,7 +368,7 @@ class ActionHandler:
         if not target:
             return ActionResult(
                 success=False,
-                message="What would you like to interact with?",
+                message="Kun quo vu volas interagar?",  # What would you like to interact with?
                 action_type="interact"
             )
             
@@ -347,7 +382,7 @@ class ActionHandler:
                     # Check if the furniture has interaction effects
                     if "interaction" in furniture:
                         interaction = furniture["interaction"]
-                        message = interaction.get("message", f"You interact with the {furniture['name']}.")
+                        message = interaction.get("message", f"Vu interagas kun la {furniture['name']}.")  # You interact with the X
                         
                         # Process any effects
                         if "effects" in interaction:
@@ -362,13 +397,13 @@ class ActionHandler:
                         
                     return ActionResult(
                         success=True,
-                        message=f"You interact with the {furniture['name']} but nothing happens.",
+                        message=f"Vu interagas kun la {furniture['name']} ma nulo eventas.",  # You interact with the X but nothing happens
                         action_type="interact"
                     )
                     
         return ActionResult(
             success=False,
-            message=f"You don't see any {target} here that you can interact with.",
+            message=f"Vu ne vidas {target} ca-hike por interagar.",  # You don't see any X here that you can interact with
             action_type="interact"
         )
         
@@ -377,11 +412,11 @@ class ActionHandler:
         if not self.player.inventory:
             return ActionResult(
                 success=True,
-                message="Your inventory is empty.",
+                message="Vua inventario esas vakua.",  # Your inventory is empty
                 action_type="inventory"
             )
             
-        inventory_text = "Inventory:\n"
+        inventory_text = "Inventario:\n"
         for item in self.player.inventory:
             inventory_text += f"- {item['name']}\n"
             
@@ -396,13 +431,14 @@ class ActionHandler:
         """Handle checking player status"""
         status = self.player.get_status()
         
-        status_text = f"Health: {status['health']}\n"
-        status_text += f"Hunger: {status['hunger']}\n"
-        status_text += f"Thirst: {status['thirst']}\n"
-        status_text += f"Energy: {status['energy']}\n"
+        # Translate status terms to Ido
+        status_text = f"Saneso: {self.text_formatter.translate(status['health'])}\n"
+        status_text += f"Hungro: {self.text_formatter.translate(status['hunger'])}\n"
+        status_text += f"Soifo: {self.text_formatter.translate(status['thirst'])}\n"
+        status_text += f"Energio: {self.text_formatter.translate(status['energy'])}\n"
         
         if "effects" in status:
-            status_text += "Status effects: " + ", ".join(status["effects"])
+            status_text += "Statuso-efekti: " + ", ".join(status["effects"])
             
         return ActionResult(
             success=True,
@@ -413,17 +449,17 @@ class ActionHandler:
         
     def _handle_help(self):
         """Handle help command"""
-        help_text = "Available commands:\n"
-        help_text += "- look: Look around your current location\n"
-        help_text += "- examine [object]: Examine an object more closely\n"
-        help_text += "- take [item]: Take an item and add it to your inventory\n"
-        help_text += "- drop [item]: Drop an item from your inventory\n"
-        help_text += "- use [item]: Use an item from your inventory\n"
-        help_text += "- interact [object]: Interact with an object in the environment\n"
-        help_text += "- inventory: Check your inventory\n"
-        help_text += "- status: Check your current status\n"
-        help_text += "- [direction]: Move in a direction (north, south, east, west, up, down)\n"
-        help_text += "- quit: Exit the game\n"
+        help_text = "Disponebla komandi:\n"
+        help_text += "- regardar: Regardar vua nuna loko\n"
+        help_text += "- examinar [objekto]: Examinar objekto plu detale\n"
+        help_text += "- prenar [objekto]: Prenar objekto e pozar ol en vua inventario\n"
+        help_text += "- pozar [objekto]: Pozar objekto de vua inventario\n"
+        help_text += "- uzar [objekto]: Uzar objekto de vua inventario\n"
+        help_text += "- interagar [objekto]: Interagar kun objekto en la medio\n"
+        help_text += "- inventario: Kontrolar vua inventario\n"
+        help_text += "- statuso: Kontrolar vua nuna statuso\n"
+        help_text += "- [direciono]: Movar en direciono (nordo, sudo, esto, westo, supre, infre)\n"
+        help_text += "- finar: Finar la ludo\n"
         
         return ActionResult(
             success=True,

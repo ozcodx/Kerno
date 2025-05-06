@@ -4,7 +4,7 @@
 """
 Kerno: La Lasta Devo
 
-Run this script to start the game.
+Exekutez ica skripto por komencar la ludo.
 """
 
 import sys
@@ -17,7 +17,7 @@ def main():
     parser.add_argument(
         "--world", 
         default="kerno/data/tutorial_world.json",
-        help="Path to the world file to load (default: tutorial_world.json)"
+        help="La dosiero por la mondo charjar (original: tutorial_world.json)"
     )
     args = parser.parse_args()
     
@@ -25,10 +25,10 @@ def main():
         game = GameEngine(args.world)
         game.game_loop()
     except KeyboardInterrupt:
-        print("\nGame interrupted by user.")
+        print("\nLudo interrompita per uzanto.")
         return 1
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Eroro: {e}")
         return 1
     
     return 0

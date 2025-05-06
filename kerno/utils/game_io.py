@@ -13,7 +13,7 @@ class GameIO:
         os.system('cls' if os.name == 'nt' else 'clear')
         
     def display_intro(self):
-        """Display game introduction"""
+        """Display game introduction in Ido"""
         intro_text = """
         ██╗  ██╗███████╗██████╗ ███╗   ██╗ ██████╗ 
         ██║ ██╔╝██╔════╝██╔══██╗████╗  ██║██╔═══██╗
@@ -24,12 +24,12 @@ class GameIO:
         
         LA LASTA DEVO
         
-        A narrative exploration in the final days of Thalos
+        Naracanta exploro en la lasta dii di Thalos
         """
         
         # Print intro with typing effect
         self.type_text(intro_text)
-        print("\nPress Enter to begin...")
+        print("\nPresez Enter por komencar...")
         input()
         
     def display_message(self, message):
@@ -53,7 +53,7 @@ class GameIO:
         """Display the input prompt with optional action suggestions"""
         if available_actions:
             # We could optionally show a hint of possible actions here
-            # print("Actions: " + ", ".join(available_actions[:5]) + " ...")
+            # print("Akcioni: " + ", ".join(available_actions[:5]) + " ...")
             pass
             
         prompt = "> "

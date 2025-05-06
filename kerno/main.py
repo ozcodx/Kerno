@@ -57,7 +57,8 @@ class GameEngine:
     
     def cleanup(self):
         """Clean up resources before exiting"""
-        self.io.display_message("Dankon pro ludado! Ĝis revido!")  # Thank you for playing! Goodbye!
+        # Thank you for playing! Goodbye!
+        self.io.display_message("Dankon pro ludado! Ĝis revido!")
 
 if __name__ == "__main__":
     world_file = "data/tutorial_world.json"
@@ -71,6 +72,6 @@ if __name__ == "__main__":
     try:
         game.game_loop()
     except KeyboardInterrupt:
-        print("\nGame interrupted by user.")
+        print("\nLudo interrompita per uzanto.")  # Game interrupted by user
     finally:
         game.cleanup() 

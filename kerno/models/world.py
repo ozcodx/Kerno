@@ -27,19 +27,31 @@ class Room:
         
         # Add information about items
         if self.items and detailed:
-            item_desc = "\nYou can see: " + ", ".join([item["name"] for item in self.items])
+            item_desc = "\nVu povas vidar: " + ", ".join([item["name"] for item in self.items])
             desc += item_desc
         
         # Add information about furniture
         if self.furniture and detailed:
-            furniture_desc = "\nThe room contains: " + ", ".join([f["name"] for f in self.furniture])
+            furniture_desc = "\nLa chambro kontenas: " + ", ".join([f["name"] for f in self.furniture])
             desc += furniture_desc
             
         # Add information about exits
-        exit_desc = "\nExits: " + ", ".join(self.exits.keys()) if self.exits else "\nThere are no obvious exits."
+        exit_desc = "\nExiti: " + ", ".join(self._translate_exits()) if self.exits else "\nNe existas evidenta exiti."
         desc += exit_desc
         
         return desc
+        
+    def _translate_exits(self):
+        """Translate exit directions to Ido"""
+        direction_map = {
+            "north": "nordo",
+            "south": "sudo",
+            "east": "esto",
+            "west": "westo",
+            "up": "supre",
+            "down": "infre"
+        }
+        return [direction_map.get(direction, direction) for direction in self.exits.keys()]
 
 class Passage:
     def __init__(self, passage_data):
@@ -63,14 +75,26 @@ class Passage:
             
         # Add information about items
         if self.items and detailed:
-            item_desc = "\nYou can see: " + ", ".join([item["name"] for item in self.items])
+            item_desc = "\nVu povas vidar: " + ", ".join([item["name"] for item in self.items])
             desc += item_desc
             
         # Add information about connections
-        conn_desc = "\nYou can go to: " + ", ".join(self.connections.keys()) if self.connections else "\nThis passage seems to lead nowhere."
+        conn_desc = "\nVu povas irar al: " + ", ".join(self._translate_connections()) if self.connections else "\nIca pasejo semblas duktar nulaloke."
         desc += conn_desc
         
         return desc
+        
+    def _translate_connections(self):
+        """Translate connection directions to Ido"""
+        direction_map = {
+            "north": "nordo",
+            "south": "sudo",
+            "east": "esto", 
+            "west": "westo",
+            "up": "supre",
+            "down": "infre"
+        }
+        return [direction_map.get(conn, conn) for conn in self.connections.keys()]
 
 class World:
     def __init__(self, world_file):
@@ -215,4 +239,13 @@ class World:
                     "turns_remaining": turns,
                     "message": message,
                     "effects": new_effects
-                }) 
+                })
+            elif effect_type == "player_effect":
+                effect_name = effect.get("effect")
+                value = effect.get("value", 0)
+                if effect_name == "rest":
+                    player.rest(value)
+                elif effect_name == "heal":
+                    player.heal(value)
+                elif effect_name == "damage":
+                    player.take_damage(value) 

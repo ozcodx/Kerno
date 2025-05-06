@@ -8,34 +8,34 @@
     "rooms": [
         {
             "id": "tech_room",
-            "name": "Technical Room 5B",
-            "description": "You are in Technical Room 5B, your primary work area. The walls are lined with control panels and status displays, showing various readings from the facility systems. A large workbench sits in the center of the room, cluttered with tools and equipment. The air hums with the sound of machinery.",
+            "name": "Teknika Chambro 5B",
+            "description": "Vu esas en Teknika Chambro 5B, vua primara laborloko. La muri esas kovrita per kontrolpaneli e statuso-ekrani, montranta diversa mezuri de la instalaji sistemi. Granda labortablo esas en la centro di la chambro, kovrita kun utensili ed equipajo. La aero bruisas per la sono di mashini.",
             "type": "technical",
             "items": [
                 {
                     "id": "diagnostic_tool",
-                    "name": "Diagnostic Tool",
-                    "description": "A handheld device used for diagnosing technical issues in the facility systems. Its small screen displays various readings and diagnostics information.",
+                    "name": "Diagnoza Utensilo",
+                    "description": "Tenebla aparato uzata por diagnozar teknikala problemi en la instalaji sistemi. Olu mikra ekrano montras diversa mezuri e diagnoza informo.",
                     "takeable": true,
                     "usable": true,
                     "type": "tool",
                     "use_effects": [
                         {
                             "room_type": "technical",
-                            "message": "You power on the diagnostic tool and scan the surrounding systems. The readings indicate normal operation with some minor fluctuations in power levels.",
+                            "message": "Vu startigas la diagnoza utensilo e sondas la cirkondanta sistemi. La lekturi indikas normala funcionado kun kelka mikra fluktuadi en la energio-niveli.",
                             "effects": []
                         },
                         {
                             "room_type": "corridor",
-                            "message": "You power on the diagnostic tool and scan the area. The readings show some unusual electromagnetic activity in the walls.",
+                            "message": "Vu startigas la diagnoza utensilo e sondas la areo. La lekturi montras kelka nekutima elektromagnetala aktiveso en la muri.",
                             "effects": []
                         }
                     ]
                 },
                 {
                     "id": "nutrition_bar",
-                    "name": "Nutrition Bar",
-                    "description": "A standard-issue nutrition bar provided to facility workers. It doesn't look particularly appetizing, but it should provide enough energy to keep you going.",
+                    "name": "Nutrivo-Stango",
+                    "description": "Standard-donita nutrivo-stango furnisata al la laboristi di la instalajo. Ol ne aspektas tre apetiziga, ma ol devus furnizar sat energio por kontinuar.",
                     "takeable": true,
                     "usable": true,
                     "consumable": true,
@@ -46,19 +46,19 @@
             "furniture": [
                 {
                     "id": "workbench",
-                    "name": "Workbench",
-                    "description": "A sturdy metal workbench covered with various tools and electronic components. Several projects appear to be in various states of completion.",
+                    "name": "Labortablo",
+                    "description": "Robusta metala labortablo kovrita kun diversa utensili e elektronikala komponenti. Plura projekti semblas esar en diversa stadi di kompletigeso.",
                     "interaction": {
-                        "message": "You sort through the items on the workbench, finding mostly spare parts and half-finished repairs.",
+                        "message": "Vu sortigas la objekti sur la labortablo, trovante precipue rezerva peci e mi-finita reparuri.",
                         "effects": []
                     }
                 },
                 {
                     "id": "control_panel",
-                    "name": "Control Panel",
-                    "description": "A wall-mounted control panel with numerous buttons, switches, and status indicators. It appears to monitor the power distribution for this section of the facility.",
+                    "name": "Kontrolpanelo",
+                    "description": "Mur-muntita kontrolpanelo kun multa butoni, klefili, e statuso-indikatili. Ol semblas monitorigar la energio-distributo por ica seciono di la instalajo.",
                     "interaction": {
-                        "message": "You check the control panel readings. Everything seems to be operating within normal parameters, though there's a minor power fluctuation in Sector 7.",
+                        "message": "Vu kontrolas la lekturi di la kontrolpanelo. Omno semblas funcionar en normala parametri, quankam esas mikra energio-fluktuado en Sektoro 7.",
                         "effects": [
                             {
                                 "type": "set_global",
@@ -75,34 +75,34 @@
             "events": [
                 {
                     "probability": 0.2,
-                    "message": "The lights flicker briefly, then return to normal.",
+                    "message": "La lumo flagras kurta-tempe, pose retroiras a normala.",
                     "effects": []
                 }
             ]
         },
         {
             "id": "corridor_1",
-            "name": "Main Corridor",
-            "description": "You are in the main corridor connecting the technical areas with the rest of the facility. The corridor stretches east and west, with smooth metal walls painted in a practical gray. Overhead lighting casts a sterile white glow, and occasional status panels display facility information.",
+            "name": "Chefa Koridoro",
+            "description": "Vu esas en la chefa koridoro konektanta la teknikala arei kun la resto di la instalajo. La koridoro extensas esto e westo, kun glata metala muri piktita en praktikala griza. La superkapala lumigado emisas sterila blanka brilo, e sporadika statuso-paneli montras instalaj-informo.",
             "type": "corridor",
             "items": [
                 {
                     "id": "facility_map",
-                    "name": "Facility Map",
-                    "description": "A digital tablet displaying a map of the facility. It shows the layout of the technical sector and adjacent areas.",
+                    "name": "Instalaj-Mapo",
+                    "description": "Digitala tableto montranta mapo di la instalajo. Ol montras la esquiso di la teknikala sektoro e adjacanta arei.",
                     "takeable": true,
                     "usable": true,
                     "type": "tool",
-                    "use_message": "You study the facility map, getting a better understanding of the layout. The technical sector connects to the living quarters to the east and the central hub to the west."
+                    "use_message": "Vu studias la instalaj-mapo, aquirante plu bona kompreno di la esquiso. La teknikala sektoro konektas al la vivala quarteri verso esto e la centrala hubo verso westo."
                 }
             ],
             "furniture": [
                 {
                     "id": "status_panel",
-                    "name": "Status Panel",
-                    "description": "A wall-mounted status panel displaying information about the facility systems. It shows power levels, environmental conditions, and security status.",
+                    "name": "Statuso-Panelo",
+                    "description": "Mur-muntita statuso-panelo montranta informo pri la instalaji sistemi. Ol montras energio-niveli, ambiente kondicioni, e sekureso-statuso.",
                     "interaction": {
-                        "message": "The status panel shows all systems operating normally, though there's a notification about scheduled maintenance in the ventilation system tomorrow.",
+                        "message": "La statuso-panelo montras ke omna sistemi funcionas normale, quankam esas notifikado pri planizata mantenado en la ventilado-sistemo morge.",
                         "effects": []
                     }
                 }
@@ -116,14 +116,14 @@
         },
         {
             "id": "living_quarters",
-            "name": "Living Quarters",
-            "description": "You enter the living quarters section. This area contains small personal rooms for facility workers. The environment is more comfortable here, with softer lighting and more personalized décor. A common area features seating and basic kitchen facilities.",
+            "name": "Vivala Quarteri",
+            "description": "Vu eniras la vivala quarteri seciono. Ica areo kontenas mikra personala chambri por la laboristi di la instalajo. La ambiente esas plu komfortoza hike, kun plu mola lumigado e plu personalizita dekoro. Komuna areo havas sidilaro e bazala koqueyo-facilitaji.",
             "type": "residential",
             "items": [
                 {
                     "id": "water_bottle",
-                    "name": "Water Bottle",
-                    "description": "A reusable water bottle made of durable plastic. It's about half full of clean water.",
+                    "name": "Aquo-Botelo",
+                    "description": "Re-uzebla aquo-botelo facita ek rezistiva plastiko. Ol es cirkume mez-plena de klara aquo.",
                     "takeable": true,
                     "usable": true,
                     "consumable": false,
@@ -134,15 +134,15 @@
             "furniture": [
                 {
                     "id": "bed",
-                    "name": "Bed",
-                    "description": "A simple but comfortable bed with crisp white sheets. It looks inviting after a long shift.",
+                    "name": "Lito",
+                    "description": "Simpla ma komfortoza lito kun freshe blanka linaji. Ol aspektas invitanta pos longa laborturno.",
                     "interaction": {
-                        "message": "You take a short rest on the bed. It feels good to relax for a moment.",
+                        "message": "Vu prenas kurta repozo sur la lito. Esas bona sentar relaxata por momento.",
                         "effects": [
                             {
                                 "type": "schedule_event",
                                 "turns": 1,
-                                "message": "You feel refreshed after your rest.",
+                                "message": "Vu sentas refreskigita pos vua repozo.",
                                 "effects": [
                                     {
                                         "type": "player_effect",
@@ -156,22 +156,22 @@
                 },
                 {
                     "id": "personal_locker",
-                    "name": "Personal Locker",
-                    "description": "A metal locker assigned to facility workers for storing personal belongings. It has a keypad lock.",
+                    "name": "Personala Shranko",
+                    "description": "Metala shranko asignita a laboristi di la instalajo por konservar personala apartanataji. Ol havas klav-protektilo.",
                     "interaction": {
-                        "message": "You enter your access code and open the locker. Inside, you find some personal items and a small notebook with your handwriting.",
+                        "message": "Vu entresigas vua aceso-kodo e apertas la shranko. Interne, vu trovas kelka personala objekti e mikra kayero kun vua skriburo.",
                         "effects": [
                             {
                                 "type": "add_item",
                                 "target": "room",
                                 "item": {
                                     "id": "notebook",
-                                    "name": "Personal Notebook",
-                                    "description": "Your personal notebook containing notes about your work and daily life in the facility. There are some scribbled thoughts about recent power fluctuations that seem concerning.",
+                                    "name": "Personala Kayero",
+                                    "description": "Vua personala kayero kontinanta noti pri vua laboro e kodiana vivo en la instalajo. Esas kelka skribita pensi pri recenta energio-fluktuadi qui semblas trubliganta.",
                                     "takeable": true,
                                     "usable": true,
                                     "type": "tool",
-                                    "use_message": "You flip through your notebook, reading your notes about the facility. You've been documenting some unusual power fluctuations that started about a week ago. The last entry mentions that you planned to run additional diagnostics today."
+                                    "use_message": "Vu folias tra vua kayero, lektante vua noti pri la instalajo. Vu dokumentabis kelka nekutima energio-fluktuadi qui komencis cirkume un semano ante nun. La lasta enskribo mencionas ke vu planizis facar plusa diagnozozo hodie."
                                 }
                             }
                         ]
@@ -184,24 +184,24 @@
             "events": [
                 {
                     "probability": 0.1,
-                    "message": "You hear quiet conversation from one of the other rooms.",
+                    "message": "Vu audas quieta konversado de un del altra chambri.",
                     "effects": []
                 }
             ]
         },
         {
             "id": "central_hub",
-            "name": "Central Hub",
-            "description": "You stand in the central hub of the facility, a large circular room with multiple corridors branching off in different directions. The ceiling rises high above, with a central skylight allowing a view of the rocky cavern above. Several workers move about, going from one section to another.",
+            "name": "Centrala Hubo",
+            "description": "Vu standas en la centrala hubo di la instalajo, granda cirkla chambro kun multa koridori branchizanta en diversa direcioni. La plafono extensas alte supre, kun centrala suprala fenestro permisante vido di la rokoza kaverno supere. Plura laboristi movas cirkum, irante de un seciono ad altra.",
             "type": "hub",
             "items": [],
             "furniture": [
                 {
                     "id": "central_terminal",
-                    "name": "Central Terminal",
-                    "description": "A large terminal in the center of the hub, displaying facility-wide status information and announcements. Several people are gathered around it, discussing something.",
+                    "name": "Centrala Terminalo",
+                    "description": "Granda terminalo en la centro di la hubo, montranta instalaj-larga statuso-informo e anunci. Plura personi esas kunvenanta cirkum ol, diskutante ulo.",
                     "interaction": {
-                        "message": "As you approach the terminal, you notice a group of senior technicians discussing something with concerned expressions. One of them, Kaliel, notices you and waves you over.\n\n'Ah, good timing! We're seeing some unusual readings from the Crucis Engine systems. Nothing critical yet, but we're keeping an eye on it. You should probably run a full diagnostic in your sector when you get back.'",
+                        "message": "Dum vu proximeskas la terminalo, vu remarkigas grupo di seniora teknikisti diskutante ulo kun trublita expresi. Un de ili, Kaliel, remarkigas vu e manusignalas vu super.\n\n'Ha, bona tempo! Ni vidas kelka nekutima lekturi de la Crucis-Mashino sistemi. Nulo kritikala ankore, ma ni monitorigas ol. Vu probable devus facar kompleta diagnozozo en vua sektoro kande vu retroiras.'",
                         "effects": [
                             {
                                 "type": "set_global",
@@ -211,7 +211,7 @@
                             {
                                 "type": "schedule_event",
                                 "turns": 3,
-                                "message": "Your communication device beeps with a message from Kaliel: 'Those fluctuations are getting worse. Can you come back to the hub when you get a chance?'",
+                                "message": "Vua komunikilo bipas kun mesajo de Kaliel: 'Ita fluktuadi divenas plu mala. Ka vu povas retrovenar al la hubo kande vu havas oportunajo?'",
                                 "effects": []
                             }
                         ]
@@ -219,10 +219,10 @@
                 },
                 {
                     "id": "announcement_board",
-                    "name": "Announcement Board",
-                    "description": "A digital board displaying facility announcements, shift schedules, and other important information for workers.",
+                    "name": "Anunca Panelo",
+                    "description": "Digitala panelo montranta instalaj-anunci, labor-horari, e altra importanta informo por laboristi.",
                     "interaction": {
-                        "message": "You check the announcement board. Among the routine notices, there's a new announcement about increased security measures around the Crucis Engine project. Access to certain areas has been restricted to senior personnel only.",
+                        "message": "Vu kontrolas la anunca panelo. Inter la rutinala avizi, esas nova anunco pri augmentita sekureso-mezuri cirkum la Crucis-Mashino projekto. Aceso a certa arei esas nun limitizita a seniora personaro nur.",
                         "effects": []
                     }
                 }
@@ -234,33 +234,33 @@
             "events": [
                 {
                     "probability": 0.3,
-                    "message": "A group of researchers walks by, engaged in intense discussion about something called 'containment protocols.'",
+                    "message": "Grupo de esploradisti pasas preter, okupata en intensa diskuto pri ulo nomizita 'kontenado protokoli.'",
                     "effects": []
                 }
             ]
         },
         {
             "id": "research_wing",
-            "name": "Research Wing Entrance",
-            "description": "You stand at the entrance to the research wing. A heavy security door blocks further progress, with a scanner for authorization credentials. The walls here are different - reinforced and lined with warning signs about authorized personnel only.",
+            "name": "Exploro-Flugilo Enireyo",
+            "description": "Vu standas che la enireyo a la exploro-flugilo. Pezoza sekureso-pordo blokas plusa progreso, kun sondilo por autorizal atesti. La muri hike esas diferanta - renforcita e lineizita per averto-signi pri autorizita personaro nur.",
             "type": "security",
             "items": [],
             "furniture": [
                 {
                     "id": "security_scanner",
-                    "name": "Security Scanner",
-                    "description": "A biometric security scanner that controls access to the research wing. It requires proper authorization credentials to grant entry.",
+                    "name": "Sekureso-Sondilo",
+                    "description": "Biometrika sekureso-sondilo qua kontrolas aceso a la exploro-flugilo. Ol bezonas propra autorizal atesti por permesar eniro.",
                     "interaction": {
-                        "message": "You place your hand on the scanner, but it flashes red and displays 'ACCESS DENIED - INSUFFICIENT CLEARANCE LEVEL.' You need higher security credentials to enter this area.",
+                        "message": "Vu pozas vua manuo sur la sondilo, ma ol flagras reda e montras 'ACESO REFUZITA - NESUFICONATA AUTENTIKESO-NIVELO.' Vu bezonas plu alta sekureso-atesti por entrar ica areo.",
                         "effects": []
                     }
                 },
                 {
                     "id": "warning_sign",
-                    "name": "Warning Sign",
-                    "description": "A large sign with bold red lettering: 'RESTRICTED AREA - CRUCIS ENGINE PROJECT - AUTHORIZED PERSONNEL ONLY'",
+                    "name": "Averto-Signo",
+                    "description": "Granda signo kun grosega reda literi: 'LIMITIZITA AREO - CRUCIS-MASHINO PROJEKTO - AUTORIZITA PERSONARO NUR'",
                     "interaction": {
-                        "message": "You read the warning sign carefully. Below the main warning, smaller text states: 'Violation of security protocols will result in immediate termination of employment and possible criminal charges. All activities in this area are monitored.'",
+                        "message": "Vu lektas la averto-signo atenteme. Sub la chefa averto, plu mikra texto dicas: 'Violaco di sekureso-protokoli rezultos en senprokrasta finigio di employo e posibla kriminala akuzi. Omna aktivesi en ica areo esas monitoragata.'",
                         "effects": []
                     }
                 }
@@ -271,7 +271,7 @@
             "events": [
                 {
                     "probability": 0.2,
-                    "message": "The security door to the research wing opens briefly as someone exits. You catch a glimpse of a vast chamber with complex machinery before the door seals shut again.",
+                    "message": "La sekureso-pordo al la exploro-flugilo apertas kurtatempo dum ulu ekiresas. Vu kaptas lum-virado di vasta chambro kun kompleksa mashini ante ke la pordo sigelesas itere.",
                     "effects": []
                 }
             ]
